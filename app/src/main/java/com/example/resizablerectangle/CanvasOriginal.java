@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 
 public class CanvasOriginal extends View {
 
+    private PathListener listener;
     public static Path path = new Path();
     private Paint paint = new Paint();
     private boolean isCanvasSet;
@@ -49,13 +50,16 @@ public class CanvasOriginal extends View {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 path.moveTo(pointX, pointY);
+                listener.onCopy(path);
                 return true;
             case MotionEvent.ACTION_MOVE:
                 path.lineTo(pointX, pointY);
+                listener.onCopy(path);
                 break;
             default:
                 return false;
         }
+
         return false;
     }
 
@@ -66,6 +70,21 @@ public class CanvasOriginal extends View {
 
         canvas.drawColor(Color.parseColor("#252525"));
         canvas.drawPath(path, paint);
+        listener.onCopy(path);
         postInvalidate();
+    }
+
+    public interface PathListener {
+        void onCopy(Path path);
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        try {
+            listener = (PathListener) getContext();
+        } catch (ClassCastException e) {
+            throw new ClassCastException(getContext().toString() + "must implement BottomSheetListener");
+        }
     }
 }

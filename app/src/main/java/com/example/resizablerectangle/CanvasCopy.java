@@ -14,12 +14,15 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
-public class CanvasCopy extends View {
+public class CanvasCopy extends View implements CanvasOriginal.PathListener{
+
 
     public ViewGroup.LayoutParams params;
     private Paint paint = new Paint();
-
+    private Path pathC = new Path();
     private boolean isCanvasSet;
+
+    float xPoint,yPoint;
 
     public CanvasCopy(Context context) {
         super(context);
@@ -32,7 +35,6 @@ public class CanvasCopy extends View {
     public CanvasCopy(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
-
 
     public void setCanvas() {
         paint.setAntiAlias(true);
@@ -64,8 +66,12 @@ public class CanvasCopy extends View {
             setCanvas();
 
         canvas.drawColor(Color.parseColor("#252525"));
-        Path path = CanvasOriginal.path;
-        canvas.drawPath(path, paint);
+        canvas.drawPath(CanvasOriginal.path, paint);
         postInvalidate();
+    }
+
+    @Override
+    public void onCopy(Path path) {
+        pathC = path;
     }
 }
