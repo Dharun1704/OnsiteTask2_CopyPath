@@ -2,27 +2,48 @@ package com.example.resizablerectangle;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-
-import android.graphics.Canvas;
+import androidx.fragment.app.FragmentManager;
 import android.graphics.Path;
+
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
-import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity implements CanvasOriginal.PathListener {
+import java.util.ArrayList;
 
-    protected static Toast toast;
-    Path pathC = new Path();
+public class MainActivity extends AppCompatActivity {
+
+    DataSender receiver1, receiver2;
+    public static DataSender Receiver;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Receiver = new DataSender() {
+            @Override
+            public void ToSendPath(ArrayList<PathStorage> DrawnPathStorage, Path path, int id) {
+                if (id == 1)
+                    receiver2.ToSendPath(DrawnPathStorage,path,id);
+                else
+                    receiver1.ToSendPath(DrawnPathStorage,path,id);
+            }
+        };
         setContentView(R.layout.activity_main);
-        toast = new Toast(this);
-        pathC = CanvasOriginal.path;
+
+        Fragment1 firstFragment = new Fragment1();
+        receiver1 = firstFragment.getReceiver();
+        FragmentManager manager = getSupportFragmentManager();
+        manager.beginTransaction()
+                .replace(R.id.firstLayout, firstFragment, firstFragment.getTag())
+                .commit();
+
+        Fragment2 secondFragment = new Fragment2();
+        receiver2 = secondFragment.getReceiver();
+        FragmentManager manager2 = getSupportFragmentManager();
+        manager2.beginTransaction()
+                .replace(R.id.secondLayout, secondFragment, firstFragment.getTag())
+                .commit();
     }
 
     @Override
@@ -34,21 +55,21 @@ public class MainActivity extends AppCompatActivity implements CanvasOriginal.Pa
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.newPage) {
-            pathC.reset();
-            toast = Toast.makeText(MainActivity.this, "A new page is created", Toast.LENGTH_SHORT);
-            toast.show();
+            Fragment1 firstFragment= new Fragment1();
+            receiver1= firstFragment.getReceiver();
+            FragmentManager manager= getSupportFragmentManager();
+            manager.beginTransaction()
+                    .replace(R.id.firstLayout,firstFragment,firstFragment.getTag())
+                    .commit();
+
+            Fragment2 secondFragment= new Fragment2();
+            receiver2= secondFragment.getReceiver();
+            FragmentManager manager2= getSupportFragmentManager();
+            manager2.beginTransaction()
+                    .replace(R.id.secondLayout,secondFragment,firstFragment.getTag())
+                    .commit();
         }
+
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        toast.cancel();
-    }
-
-    @Override
-    public void onCopy(Path path) {
-
     }
 }

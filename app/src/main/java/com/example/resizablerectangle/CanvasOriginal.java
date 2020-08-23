@@ -2,89 +2,91 @@ package com.example.resizablerectangle;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.util.AttributeSet;
 import android.view.MotionEvent;
-import android.view.View;
+import  android.view.View;
 
-import androidx.annotation.Nullable;
+import java.util.ArrayList;
+
 
 public class CanvasOriginal extends View {
 
-    private PathListener listener;
-    public static Path path = new Path();
-    private Paint paint = new Paint();
-    private boolean isCanvasSet;
+    Paint paint;
+    Path path;
 
-    public CanvasOriginal(Context context) {
+    DataSender dataListener;
+    int fragID;
+
+    ArrayList<PathStorage> PathDrawnData;
+
+
+    public CanvasOriginal(Context context, DataSender dataListener, int fragid) {
         super(context);
-    }
+        this.dataListener = dataListener;
+        this.fragID = fragid;
 
-    public CanvasOriginal(Context context, @Nullable AttributeSet attrs) {
-        super(context, attrs);
-    }
+        PathDrawnData=new ArrayList<>();
 
-    public CanvasOriginal(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-    }
-
-
-    public void setCanvas() {
+        paint = new Paint();
+        path = new Path();
         paint.setAntiAlias(true);
-        paint.setColor(Color.WHITE);
-        paint.setStyle(Paint.Style.STROKE);
+        paint.setColor(Color.parseColor("#40C8E8"));
         paint.setStrokeJoin(Paint.Join.ROUND);
+        paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeWidth(5f);
-        isCanvasSet = true;
     }
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        float pointX = event.getX();
-        float pointY = event.getY();
+        float xpos = event.getX();
+        float ypos = event.getY();
 
-        switch (event.getAction()) {
+
+        switch (event.getAction()){
             case MotionEvent.ACTION_DOWN:
-                path.moveTo(pointX, pointY);
-                listener.onCopy(path);
+                path.moveTo(xpos,ypos);
+                MainActivity.Receiver.ToSendPath(PathDrawnData,path, fragID);
+
                 return true;
             case MotionEvent.ACTION_MOVE:
-                path.lineTo(pointX, pointY);
-                listener.onCopy(path);
+                path.lineTo(xpos,ypos);
+                MainActivity.Receiver.ToSendPath(PathDrawnData,path, fragID);
                 break;
+
+            case MotionEvent.ACTION_UP:
+                PathDrawnData.add(new PathStorage(path));
+                path=new Path();
+                break;
+
             default:
                 return false;
         }
-
-        return false;
+        invalidate();
+        return true;
     }
+
 
     @Override
-    protected void onDraw(Canvas canvas) {
-        if (!isCanvasSet)
-            setCanvas();
+    protected void onDraw(android.graphics.Canvas canvas) {
+        super.onDraw(canvas);
 
-        canvas.drawColor(Color.parseColor("#252525"));
-        canvas.drawPath(path, paint);
-        listener.onCopy(path);
-        postInvalidate();
-    }
-
-    public interface PathListener {
-        void onCopy(Path path);
-    }
-
-    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-        try {
-            listener = (PathListener) getContext();
-        } catch (ClassCastException e) {
-            throw new ClassCastException(getContext().toString() + "must implement BottomSheetListener");
+        for (int i = 0; i < PathDrawnData.size(); i++){
+            canvas.drawPath(PathDrawnData.get(i)._path, paint);
         }
+        canvas.drawPath(path, paint);
+
+    }
+
+    public void setPaintPath(Path path){
+        this.path = path;
+        invalidate();
+    }
+
+    public void setPathData(ArrayList<PathStorage> pathData){
+        PathDrawnData = pathData;
+        invalidate();
     }
 }

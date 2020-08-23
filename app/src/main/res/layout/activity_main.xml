@@ -1,31 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/MainLayout"
     android:layout_width="match_parent"
-    android:orientation="vertical"
-    android:background="#252525"
     android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#000"
     tools:context=".MainActivity">
 
-    <fragment
-        android:id="@+id/fragment"
-        android:name="com.example.resizablerectangle.Fragment1"
+    <RelativeLayout
+        android:id="@+id/firstLayout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        tools:layout="@layout/fragment_1" />
+        android:background="#252525">
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:fontFamily="@font/nunito"
+            android:text="Draw Page 1"
+            android:textColor="#FFF"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </RelativeLayout>
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="4dp"
-        android:background="@drawable/btn_bg"/>
+        android:layout_height="5dp"
+        android:background="@drawable/btn_bg" />
 
-    <fragment
-        android:id="@+id/fragment2"
-        android:name="com.example.resizablerectangle.Fragment2"
+    <LinearLayout
+        android:id="@+id/secondLayout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        tools:layout="@layout/fragment_2" />
+        android:layout_marginStart="1dp"
+        android:layout_marginLeft="1dp"
+        android:layout_marginEnd="1dp"
+        android:layout_marginRight="1dp"
+        android:layout_marginBottom="1dp"
+        android:background="#252525"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="Draw Page 2"
+            android:textColor="#FFF"
+            android:fontFamily="@font/nunito" />
+    </LinearLayout>
 
 </LinearLayout>
